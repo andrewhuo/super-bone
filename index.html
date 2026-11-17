@@ -1,41 +1,45 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Super Bone</title>
-  <style>
-    body {
-      background: #111827;
-      color: white;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 60px 20px;
-    }
-    input {
-      padding: 12px;
-      width: 70%;
-      max-width: 400px;
-      border-radius: 6px;
-    }
-    button {
-      padding: 12px 20px;
-      cursor: pointer;
-    }
-  </style>
 </head>
 <body>
   <h1>Super Bone</h1>
-  <p>My personal game portal</p>
-  <input id="url" value="https://florr.io">
-  <button onclick="openGame()">Open Game</button>
+  <p id="status">Connecting...</p>
+  <button id="test" disabled>Test Connection</button>
+  <p id="result"></p>
 
   <script>
-    function openGame() {
-      const url = document.getElementById("url").value;
-      window.location.href = url;
-    }
+    const socket = new WebSocket(
+      "wss://purple-queen-c16d.andrewmhuo.workers.dev/"
+    );
+
+    socket.onopen = () => {
+      document.getElementById("status").textContent =
+        "Connected!";
+      document.getElementById("test").disabled = false;
+    };
+
+    socket.onmessage = (event) => {
+      document.getElementById("result").textContent =
+        "Server replied: " + event.data;
+    };
+
+    socket.onerror = () => {
+      document.getElementById("status").textContent =
+        "Connection error";
+    };
+
+    socket.onclose = () => {
+      document.getElementById("status").textContent =
+        "Disconnected";
+    };
+
+    document.getElementById("test").onclick = () => {
+      socket.send("Hello from Super Bone!");
+    };
   </script>
 </body>
 </html>
